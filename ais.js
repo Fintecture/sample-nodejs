@@ -8,7 +8,7 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 require('dotenv').config();
 
 // Create the fintecture client instance
-let client = new FintectureClient({ app_id: process.env.APP_ID, app_secret: process.env.APP_SECRET, private_key: process.env.APP_PRIV_KEY });
+let client = new FintectureClient({ app_id: process.env.APP_ID, app_secret: process.env.APP_SECRET, private_key: process.env.APP_PRIV_KEY, env: process.env.FINTECTURE_ENV });
 
 // Define accessToken and CustomerID global variables
 let accessToken;
@@ -21,12 +21,12 @@ app.get("/", async (req, res) => {
 
     try {
         // Get list of available banks
-        let options = {'filter[ais]': 'accounts', 'filter[country]': 'FR', 'filter[psu_supported_types]': 'retails', 'sort[full_name]': 'asc'}
+        let options = {'filter[ais]': 'accounts', 'filter[country]': 'FR', 'filter[psu_supported_types]': 'retail', 'sort[full_name]': 'asc'}
         let providers = await client.getProviders(options);
         res.write(_prettyDisplayProviders(providers));
     }
     catch (err) {
-        res.write(JSON.stringify(err.data))
+        res.write(err.response?JSON.stringify(err.response.data):'error');
     }
 
     res.end('</html></body>');
@@ -42,7 +42,7 @@ app.get("/provider/:provider", async (req, res) => {
     catch (err) {
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.write('<html><body>');
-        res.write(JSON.stringify(err.response.data));
+        res.write(err.response?JSON.stringify(err.response.data):'error');
         res.end('</html></body>');
     }
 });
@@ -65,7 +65,6 @@ app.get("/callback", async (req, res) => {
         res.write(_prettyDisplayAccounts(accounts));
     }
     catch (err) {
-        console.log("err ", err);
         res.write(err.response?JSON.stringify(err.response.data):'error')
     }
     res.write('</html></body>');
@@ -84,7 +83,6 @@ app.get("/transactions/:account", async (req, res) => {
         res.write(_prettyDisplayTransactions(transactions));
     }
     catch (err) {
-        console.log("err ", err);
         res.write(err.response?JSON.stringify(err.response.data):'error')
     }
     res.end('</html></body>');
@@ -102,7 +100,7 @@ var _prettyDisplayAccounts = function(accounts) {
     let headers = '<tr><th>account_id</th><th>IBAN</th><th>Name</th><th>balance</th><th>currency</th></tr>'
     let rows = '';
     accounts.data.forEach(account => {
-        rows = rows + '<tr><td><a href="../transactions/' + account.id + '">' + account.attributes.account_id + '</a></td><td>' + account.attributes.iban + '</td><td>' + account.attributes.account_name + '</td><td>' + account.attributes.balance + '</td><tr>';
+        rows = rows + '<tr><td><a href="../transactions/' + account.id + '">' + account.attributes.account_id + '</a></td><td>' + account.attributes.iban + '</td><td>' + account.attributes.account_name + '</td><td>' + account.attributes.balance + '</td><td>' + account.attributes.currency + '</td><tr>';
     });
     return '<table style="border:1px black;padding: 10px;">' + headers + rows + '</table>';
 };
