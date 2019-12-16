@@ -1,0 +1,47 @@
+<html>
+    <body>
+        <% if (errors.length) { %>
+            <h2><%= errors.length === 1 ? 'Error' : 'Errors' %> prohibited this connect configuration</h2>
+            <ul>
+                <% for(var i=0; i<errors.length; i++) {%>
+                    <li><%= errors[i] %></li>
+                <% } %>
+            </ul>
+        <% } %>
+
+        <form name="form1" method="POST" action="/connect">
+            <div class="form-group">
+                <label for="amount">* Amount</label>
+                <input type="number" id="amount" name="amount" value="<%= amount %>">
+            </div>
+            <div class="form-group">
+                <label for="currency">* Currency</label>
+                <input type="text" id="currency" name="currency" value="<%= currency %>">
+            </div>
+            <div class="form-group">
+                <label for="order_id">* Order ID</label>
+                <input type="text" id="order_id" name="order_id" value="<%= order_id %>">
+            </div>
+
+            <% if (production) { %>
+                <div class="form-group">
+                    <label for="customer_id">* Customer ID</label>
+                    <input type="number" id="customer_id" name="customer_id" value="<%= customer_id %>">
+                </div>
+                <div class="form-group">
+                    <label for="customer_ip">* Customer IP</label>
+                    <input type="text" id="customer_ip" name="customer_ip" value="<%= customer_ip %>">
+                </div>
+                <div class="form-group">
+                    <label for="customer_full_name">* Customer Full Name</label>
+                    <input type="text" id="customer_full_name" name="customer_full_name" value="<%= customer_full_name %>">
+                </div>
+                <div class="form-group">
+                    <label for="customer_email">* Customer Email</label>
+                    <input type="email" id="customer_email" name="customer_email" value="<%= customer_email %>">
+                </div>
+            <% } %>
+            <button type="submit">Pay by bank</button>
+        </form>
+    </body>
+</html>
