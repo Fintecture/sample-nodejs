@@ -8,7 +8,7 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 require('dotenv').config();
 
 // Create the fintecture client instance
-let client = new FintectureClient({ app_id: process.env.APP_ID, app_secret: process.env.APP_SECRET, private_key: process.env.APP_PRIV_KEY, env: process.env.FINTECTURE_ENV });
+let client = new FintectureClient({ app_id: process.env.APP_MERCHANT_ID, app_secret: process.env.APP_MERCHANT_SECRET, private_key: process.env.APP_MERCHANT_PRIV_KEY, env: process.env.FINTECTURE_ENV });
 
 // Define accessToken and CustomerID global variables
 let accessToken;
@@ -26,7 +26,8 @@ app.get("/", async (req, res) => {
         res.write(_prettyDisplayProviders(providers));
     }
     catch (err) {
-        res.write(err.response?JSON.stringify(err.response.data):'error');
+        console.log(JSON.stringify(err))
+        res.write(err.response?JSON.stringify(err.response.data):'error getting providers');
     }
 
     res.end('</html></body>');

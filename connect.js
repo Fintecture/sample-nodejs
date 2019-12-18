@@ -38,10 +38,10 @@ app.post("/connect", async (req, res) => {
 
     if(errors.length === 0){ 
         let connectConfig = {
-            amount: req.body.amount,
+            amount: Number(req.body.amount),
             currency: req.body.currency,
             communication: req.body.order_id,
-            customer_id: req.body.customer_id || '9',
+            customer_id: req.body.customer_id || 9,
             customer_full_name: req.body.customer_full_name || 'Bob Smith',
             customer_email: req.body.customer_email || 'bob.smith@gmail.com',
             customer_ip: req.body.customer_ip || '127.0.0.1',
