@@ -16,18 +16,18 @@ let customerId;
 
 // Construct a provider selector pane
 app.get("/", async (req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.write('<html><body>');
 
     try {
         // Get list of available banks
         let countryFilter = req.query.country || 'FR';
-        let options = {'filter[ais]': 'accounts', 'filter[country]': countryFilter, 'filter[psu_supported_types]': 'retail', 'sort[full_name]': 'asc'}
+        let options = { 'filter[ais]': 'accounts', 'filter[country]': countryFilter, 'filter[psu_supported_types]': 'retail', 'sort[full_name]': 'asc' }
         let providers = await client.getProviders(options);
         res.write(_prettyDisplayProviders(providers));
     }
     catch (err) {
-        res.write(err.response?JSON.stringify(err.response.data):'error getting providers');
+        res.write(err.response ? JSON.stringify(err.response.data) : 'error getting providers');
     }
 
     res.end('</html></body>');
@@ -41,19 +41,19 @@ app.get("/provider/:provider", async (req, res) => {
         res.redirect(providerAuth.url);
     }
     catch (err) {
-        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         res.write('<html><body>');
-        res.write(err.response?JSON.stringify(err.response.data):'error');
+        res.write(err.response ? JSON.stringify(err.response.data) : 'error');
         res.end('</html></body>');
     }
 });
 
 // Get 'code' querystring parameter and hit data api
 app.get("/callback", async (req, res) => {
-    const code = req.query.code;
+    const code = req.query.code || 'unknown';
     customerId = req.query.customer_id;
 
-    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.write('</html></body>');
 
     try {
@@ -66,8 +66,9 @@ app.get("/callback", async (req, res) => {
         res.write(_prettyDisplayAccounts(accounts));
     }
     catch (err) {
-        res.write(err.response?JSON.stringify(err.response.data):'error')
+        res.write(err.response ? JSON.stringify(err.response.data) : 'error')
     }
+    
     res.write('</html></body>');
     res.end();
 });
@@ -75,7 +76,7 @@ app.get("/callback", async (req, res) => {
 app.get("/transactions/:account", async (req, res) => {
     const account = req.params.account;
 
-    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.write('</html></body>');
 
     try {
@@ -84,12 +85,12 @@ app.get("/transactions/:account", async (req, res) => {
         res.write(_prettyDisplayTransactions(transactions));
     }
     catch (err) {
-        res.write(err.response?JSON.stringify(err.response.data):'error')
+        res.write(err.response ? JSON.stringify(err.response.data) : 'error')
     }
     res.end('</html></body>');
 });
 
-var _prettyDisplayProviders = function(providers) {
+var _prettyDisplayProviders = function (providers) {
     let list = '';
     providers.data.forEach(provider => {
         list = list + '<a href="/provider/' + provider.id + '">' + provider.attributes.full_name + '</a><br>';
@@ -97,7 +98,7 @@ var _prettyDisplayProviders = function(providers) {
     return list;
 }
 
-var _prettyDisplayAccounts = function(accounts) {
+var _prettyDisplayAccounts = function (accounts) {
     let headers = '<tr><th>account_id</th><th>IBAN</th><th>Name</th><th>balance</th><th>currency</th></tr>'
     let rows = '';
     accounts.data.forEach(account => {
@@ -106,7 +107,7 @@ var _prettyDisplayAccounts = function(accounts) {
     return '<table style="border:1px black;padding: 10px;">' + headers + rows + '</table>';
 };
 
-var _prettyDisplayTransactions = function(transactions) {
+var _prettyDisplayTransactions = function (transactions) {
     let headers = '<tr><th>date</th><th>communication</th><th>amount</th><th>currency</th></tr>'
     let rows = '';
     transactions.data.forEach(txn => {
