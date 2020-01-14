@@ -21,9 +21,9 @@ app.get("/", async (req, res) => {
 
     try {
         // Get list of available banks
-        let countryFilter = req.query.country || 'FR';
-        let options = { 'filter[ais]': 'accounts', 'filter[country]': countryFilter, 'filter[psu_supported_types]': 'retail', 'sort[full_name]': 'asc' }
+        let options = { 'filter[ais]': 'accounts', 'filter[psu_type]': 'retail', 'filter[auth_model]': 'decoupled', 'sort[full_name]': 'asc' }
         let providers = await client.getProviders(options);
+ 
         res.write(_prettyDisplayProviders(providers));
     }
     catch (err) {
@@ -33,19 +33,47 @@ app.get("/", async (req, res) => {
     res.end('</html></body>');
 });
 
-app.get("/provider/:provider", async (req, res) => {
+app.get("/provider/:provider/psu", async (req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(_prettyDisplayPSUform(req.params.provider));
+});
+
+app.get("/provider/:provider/auth", async (req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.write('<html><body>');
+
+    let psuId = req.query.psu_id;
+    let psuIpAddress = req.connection.remoteAddress;
 
     try {
-        // Authenticate to a bank for AIS connections
-        let providerAuth = await client.getProviderAuthUrl(null, req.params.provider, process.env.APP_REDIRECT_URI);
-        res.redirect(providerAuth.url);
+        res.write('Mobile authentication started, please open your bank app to authenticate. <br><br>');
+        res.write('loading . .')
+        // Initiate a decopled authentication and get the polling URL
+        let providerAuth = await client.getDecoupledAuthUrl(null, req.params.provider, psuId, psuIpAddress);
+        while (true) {
+            try {
+                // poll the decoupled authentication status
+                let auth = await client.getDecoupledAuthStatus(null, req.params.provider, providerAuth.polling_id);
+                console.log("====> auth ", auth)
+                if (auth.status == 'COMPLETED') {
+                    res.write(_redirect('/callback?code=' + auth.code + '&customer_id=' + auth.customer_id));
+                    break;
+                } else if (auth.status == 'FAILED') {
+                    res.write('<br><br>Decoupled auth FAILED');
+                    break;
+                } else {
+                    res.write(' .')
+                }
+            } catch (err) {
+                res.write('error');
+            }
+            await delay(1000);
+        }
     }
     catch (err) {
-        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-        res.write('<html><body>');
         res.write(err.response ? JSON.stringify(err.response.data) : 'error');
-        res.end('</html></body>');
     }
+    res.end('</html></body>');
 });
 
 // Get 'code' querystring parameter and hit data api
@@ -68,7 +96,7 @@ app.get("/callback", async (req, res) => {
     catch (err) {
         res.write(err.response ? JSON.stringify(err.response.data) : 'error')
     }
-    
+
     res.write('</html></body>');
     res.end();
 });
@@ -93,7 +121,7 @@ app.get("/transactions/:account", async (req, res) => {
 var _prettyDisplayProviders = function (providers) {
     let list = '';
     providers.data.forEach(provider => {
-        list = list + '<a href="/provider/' + provider.id + '">' + provider.attributes.full_name + '</a><br>';
+        list = list + '<a href="/provider/' + provider.id + '/psu">' + provider.attributes.full_name + '</a><br>';
     });
     return list;
 }
@@ -114,6 +142,24 @@ var _prettyDisplayTransactions = function (transactions) {
         rows = rows + '<tr><td>' + txn.attributes.booking_date + '</td><td>' + txn.attributes.communication + '</td><td>' + txn.attributes.amount + '</td><td>' + txn.attributes.currency + '</td><tr>';
     });
     return '<table style="border:1px black;padding: 10px;">' + headers + rows + '</table>';
+}
+
+var _prettyDisplayPSUform = function (provider) {
+   return `
+        <html><body><br>
+        PSU ID: <input type="text" id="psu_id" value="193805010844"><br>
+        <br>
+        <button onclick="next()">Next</button>
+        <script>function next() { window.location.href = "/provider/${provider}/auth?psu_id=" + document.getElementById("psu_id").value }</script>
+        </html></body>`
+}
+
+var _redirect = function (url) {
+    return '<script type="text/javascript"> window.location.href = "' + url + '"; </script>'
+}
+
+var delay = async function (ms) {
+    return await new Promise(resolve => setTimeout(resolve, ms));
 }
 
 app.listen(1234, () => console.log("Fintecture App listening on port 1234..."))
