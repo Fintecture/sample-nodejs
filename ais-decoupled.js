@@ -43,7 +43,7 @@ app.get("/provider/:provider/auth", async (req, res) => {
     res.write('<html><body>');
 
     let psuId = req.query.psu_id;
-    let psuIpAddress = req.connection.remoteAddress;
+    let psuIpAddress = req.headers['x-forwarded-for'];
 
     try {
         res.write('Mobile authentication started, please open your bank app to authenticate. <br><br>');
@@ -54,7 +54,7 @@ app.get("/provider/:provider/auth", async (req, res) => {
             try {
                 // poll the decoupled authentication status
                 let auth = await client.getDecoupledAuthStatus(null, req.params.provider, providerAuth.polling_id);
-                console.log("====> auth ", auth)
+ 
                 if (auth.status == 'COMPLETED') {
                     res.write(_redirect('/callback?code=' + auth.code + '&customer_id=' + auth.customer_id));
                     break;

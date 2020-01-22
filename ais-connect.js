@@ -61,11 +61,9 @@ app.get("/callback", async (req, res) => {
 
     if(code){
         try {
-            console.log('No access token, asking by code', code);
             // get the Fintecture access token to request the AIS APIs
             const tokens = await client.getAccessToken(code);
             accessToken = tokens.access_token;
-            console.log('Access token', accessToken);
         }
         catch (err) {
             res.write(err.response ? JSON.stringify(err.response.data) : 'error')
