@@ -24,8 +24,7 @@ app.get("/", async (_req, res) => {
         errors: errors,
         amount: 150,
         currency: "EUR",
-        order_id: "123",
-        customer_id: '',
+        communication: "123",
         customer_ip: '',
         customer_full_name: '',
         customer_email: '',
@@ -34,14 +33,14 @@ app.get("/", async (_req, res) => {
 });
 
 app.post("/connect", async (req, res) => {
+
     checkConnectParams(req.body);
 
     if(errors.length === 0){ 
         let connectConfig = {
             amount: Number(req.body.amount),
             currency: req.body.currency,
-            communication: req.body.order_id,
-            customer_id: req.body.customer_id || 9,
+            communication: req.body.communication,
             customer_full_name: req.body.customer_full_name || 'Bob Smith',
             customer_email: req.body.customer_email || 'bob.smith@gmail.com',
             customer_ip: req.body.customer_ip || '127.0.0.1',
@@ -51,12 +50,15 @@ app.post("/connect", async (req, res) => {
     
         try {
             let accessToken = await client.getAccessToken();
-            let url = await client.getPisConnectUrl(accessToken["access_token"], connectConfig);
-            res.redirect(url);
-    
+            let connect = await client.getPisConnect(accessToken["access_token"], connectConfig);
+            res.redirect(connect.url);
         }
         catch (err) {
+            console.log("err", err)
+            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+            res.write('<html><body>');
             res.write(err.response?JSON.stringify(err.response.data):'error');
+            res.end('</html></body>');
         }
     } else {
         res.redirect('/');
@@ -88,7 +90,7 @@ function checkConnectParams(params) {
     errors = [];
     if (params.amount === null) errors.push('Amount field is mandatory')
     if (params.currency === null || params.currency === '') errors.push('Currency field is mandatory')
-    if (params.order_id === null || params.order_id === '') errors.push('Order ID field is mandatory')
+    if (params.communication === null || params.communication === '') errors.push('Communication field is mandatory')
     if (Number(params.amount) === NaN) errors.push('Amount should be a number')
     if (Number(params.amount) <= 0) errors.push('Amount should be greater than 0')
 }
