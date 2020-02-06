@@ -26,7 +26,7 @@ let state = {
 // Construct a provider selector pane
 app.get("/", (req, res) => {
     const url = `http://localhost:4201/ais/retail/fr?state=${Buffer.from(JSON.stringify(state)).toString('base64')}`
-    console.log(state);
+
     res.writeHead(
         301,
         {Location: url}

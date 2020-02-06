@@ -22,7 +22,8 @@ app.get("/", async (req, res) => {
     try {
         // Get list of available banks
         let countryFilter = req.query.country || 'FR';
-        let options = { 'filter[ais]': 'accounts', 'filter[country]': countryFilter, 'filter[psu_type]': 'retail', 'filter[auth_model]': 'redirect', 'sort[full_name]': 'asc' }
+        let psuType = req.query.psu_type || 'retail';
+        let options = { 'filter[ais]': 'accounts', 'filter[country]': countryFilter, 'filter[psu_type]': psuType, 'filter[auth_model]': 'redirect', 'sort[full_name]': 'asc' }
         let providers = await client.getProviders(options);
         res.write(_prettyDisplayProviders(providers));
     }

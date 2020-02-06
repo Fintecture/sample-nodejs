@@ -45,7 +45,9 @@ app.post("/connect", async (req, res) => {
             customer_email: req.body.customer_email || 'bob.smith@gmail.com',
             customer_ip: req.body.customer_ip || '127.0.0.1',
             redirect_uri: process.env.APP_REDIRECT_URI,
-            origin_uri: process.env.APP_REDIRECT_URI.replace('/callback','')
+            origin_uri: process.env.APP_REDIRECT_URI.replace('/callback',''),
+            psu_type: 'retail',
+            country: 'fr'
         };
     
         try {
@@ -67,14 +69,9 @@ app.post("/connect", async (req, res) => {
 
 app.get("/callback", async (req, res) => {
     try {
-        let verification = await client.verifyConnectUrlParameters({
-            session_id: req.query.session_id,
-            status: req.query.status,
-            customer_id: req.query.customer_id,
-            provider: req.query.provider,
-            state: req.query.state,
-            s: req.query.s
-        });
+        let accessToken = await client.getAccessToken();
+        let payment = await client.getPayments(accessToken["access_token"], req.query.session_id);
+        let verification = (payment.meta.status === req.query.status)
 
         res.render("callback", {
             status: req.query.status,
