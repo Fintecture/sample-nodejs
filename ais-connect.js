@@ -2,6 +2,11 @@ const { FintectureClient } = require('fintecture-client');
 const app = require("express")();
 const path = require('path');
 const dotenv = require('dotenv');
+var bodyParser = require("body-parser"); 
+
+app.set("view engine", "ejs"); 
+app.set("views", __dirname + "/views/ais-connect");
+app.use(bodyParser.urlencoded({ extended: false })); 
 
 dotenv.config({ path: path.join(__dirname, '.env') });
 
@@ -17,15 +22,28 @@ let state = {
     app_id:process.env.APP_ID,
     signature_type:"rsa-sha256",
     signature:"XXMDmT+D2Yik61K1aDReFaL86z8dlTkcHYDaxdHPcoJmrMfIu5HcyAie2XrD\/vTToJs0bafDSL1K0n7x74UWyLPCuZjkaaKcGcU\/uPRPJGi5JbDFSs39WXj1RazdAAu+\/liV86HKl67zDB14PMMT4Sal68aWqk+K71ywE3GTJ04gdVFaAyijuDOCM7hKEcqtrUbhCQ+mjw0Kd0NEgjbEs0lD2ZRISpK8ixbTH59m3wk3WJP1627slxNuoKBuhlUIT7gnprZHbOkeIfhkar3oHFUgCXQhqRiIIWtsSj48eMh0fK+jayyhhsnmYlRJ84TG2Tx38xwakB9jy71eY1xtGQ==",
-    redirect_uri:"http://localhost:1234/callback",
+    redirect_uri:process.env.APP_REDIRECT_URI,
     state:"bob",
     psu_ip:"192.168.1.1",
-    error_redirect_uri:"http://localhost:1234/error_page"
+    error_redirect_uri:process.env.APP_REDIRECT_URI + '?error=error'
 }
 
+// initial screen
+app.get("/", async (_req, res) => {
+    res.render("index", {});
+});
+
+
 // Construct a provider selector pane
-app.get("/", (req, res) => {
-    const url = `http://localhost:4201/ais/retail/fr?state=${Buffer.from(JSON.stringify(state)).toString('base64')}`
+app.get("/connect", (req, res) => {
+
+    const psuType = req.query.psu_type || 'retail';
+    const country = req.query.country || 'fr';
+
+    state['psu_type'] = psuType;
+    state['country'] = country;
+
+    const url = `https://connect-test.fintecture.com/ais/corporate/fr?state=${Buffer.from(JSON.stringify(state)).toString('base64')}`
 
     res.writeHead(
         301,
@@ -111,14 +129,6 @@ app.get("/provider/:provider", async (req, res) => {
         res.end('</html></body>');
     }
 });
-
-var _prettyDisplayProviders = function (providers) {
-    let list = '';
-    providers.data.forEach(provider => {
-        list = list + '<a href="/provider/' + provider.id + '">' + provider.attributes.full_name + '</a><br>';
-    });
-    return list;
-}
 
 var _prettyDisplayAccounts = function (accounts) {
     let headers = '<tr><th>account_id</th><th>IBAN</th><th>Name</th><th>balance</th><th>currency</th></tr>'

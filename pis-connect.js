@@ -6,7 +6,7 @@ const fs = require('fs');
 var bodyParser = require("body-parser"); 
 
 app.set("view engine", "ejs"); 
-app.set("views", __dirname + "/views/connect");
+app.set("views", __dirname + "/views/pis-connect");
 app.use(bodyParser.urlencoded({ extended: false })); 
 
 dotenv.config({ path: path.join(__dirname, '.env') });
