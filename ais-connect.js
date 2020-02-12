@@ -148,4 +148,4 @@ var _prettyDisplayTransactions = function (transactions) {
     return '<table style="border:1px black;padding: 10px;">' + headers + rows + '</table>';
 }
 
-app.listen(1234, () => console.log("Fintecture App listening on port 1234..."))
+app.listen(1236, () => console.log("Fintecture App listening on port 1234..."))

@@ -92,4 +92,4 @@ function checkConnectParams(params) {
     if (Number(params.amount) <= 0) errors.push('Amount should be greater than 0')
 }
 
-app.listen(1234, () => console.log("Fintecture App listening on port 1234..."))
+app.listen(1237, () => console.log("Fintecture App listening on port 1234..."))
