@@ -18,15 +18,7 @@ let client = new FintectureClient({ app_id: process.env.APP_ID, app_secret: proc
 // Define accessToken and CustomerID global variables
 let accessToken;
 let customerId;
-let state = {
-    app_id:process.env.APP_ID,
-    signature_type:"rsa-sha256",
-    signature:"XXMDmT+D2Yik61K1aDReFaL86z8dlTkcHYDaxdHPcoJmrMfIu5HcyAie2XrD\/vTToJs0bafDSL1K0n7x74UWyLPCuZjkaaKcGcU\/uPRPJGi5JbDFSs39WXj1RazdAAu+\/liV86HKl67zDB14PMMT4Sal68aWqk+K71ywE3GTJ04gdVFaAyijuDOCM7hKEcqtrUbhCQ+mjw0Kd0NEgjbEs0lD2ZRISpK8ixbTH59m3wk3WJP1627slxNuoKBuhlUIT7gnprZHbOkeIfhkar3oHFUgCXQhqRiIIWtsSj48eMh0fK+jayyhhsnmYlRJ84TG2Tx38xwakB9jy71eY1xtGQ==",
-    redirect_uri:process.env.APP_REDIRECT_URI,
-    state:"bob",
-    psu_ip:"192.168.1.1",
-    error_redirect_uri:process.env.APP_REDIRECT_URI + '?error=error'
-}
+
 
 // initial screen
 app.get("/", async (_req, res) => {
@@ -34,26 +26,37 @@ app.get("/", async (_req, res) => {
 });
 
 
-// Construct a provider selector pane
+// Redirect to connect
 app.get("/connect", (req, res) => {
-
     const psuType = req.query.psu_type || 'retail';
     const country = req.query.country || 'fr';
 
-    state['psu_type'] = psuType;
-    state['country'] = country;
+    let config = {
+        redirect_uri:process.env.APP_REDIRECT_URI,
+        origin_uri:process.env.APP_REDIRECT_URI + '?origin=hello',
+        state:"bob",
+        psu_type: psuType,
+        country: country
+    }
 
-    const url = `https://connect-test.fintecture.com/ais/corporate/fr?state=${Buffer.from(JSON.stringify(state)).toString('base64')}`
+    const connect = client.getAisConnect(null, config)
 
     res.writeHead(
         301,
-        {Location: url}
+        {Location: connect.url}
     );
     res.end();
 });
 
 app.get("/i_have_an_access_token", (req, res) => {
-    state.access_token = accessToken;
+    let config = {
+        access_token: req.query.access_token,
+        redirect_uri:process.env.APP_REDIRECT_URI,
+        error_redirect_uri:process.env.APP_REDIRECT_URI + '?error=error',
+        state:"bob",
+        psu_type: psuType,
+        country: country
+    }
     const url = `http://localhost:4201/ais/retail/fr?state=${Buffer.from(JSON.stringify(state)).toString('base64')}`
     res.writeHead(
         301,
@@ -148,4 +151,4 @@ var _prettyDisplayTransactions = function (transactions) {
     return '<table style="border:1px black;padding: 10px;">' + headers + rows + '</table>';
 }
 
-app.listen(1236, () => console.log("Fintecture App listening on port 1234..."))
+app.listen(1236, () => console.log("Fintecture App listening on port 1236..."))

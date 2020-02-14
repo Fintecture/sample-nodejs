@@ -1,9 +1,11 @@
 <html>
     <body>
-        <form name="form1" method="GET" action="/connect?psu_type=retail">
+        <form name="form1" method="GET" action="/connect">
+            <input type="hidden" name="psu_type" value="retail" /> 
             <button type="submit">Connect RETAIL</button>
         </form>
-        <form name="form1" method="GET" action="/connect?psu_type=corpo">
+        <form name="form1" method="GET" action="/connect">
+            <input type="hidden" name="psu_type" value="corporate" /> 
             <button type="submit">Connect CORPO</button>
         </form>
     </body>
