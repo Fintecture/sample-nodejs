@@ -2,11 +2,11 @@ const { FintectureClient } = require('fintecture-client');
 const app = require("express")();
 const path = require('path');
 const dotenv = require('dotenv');
-const fs = require('fs');
+const qrcode = require('qrcode');
 var bodyParser = require("body-parser"); 
 
 app.set("view engine", "ejs"); 
-app.set("views", __dirname + "/views/pis-connect");
+app.set("views", __dirname + "/views/pis-connect-qr");
 app.use(bodyParser.urlencoded({ extended: false })); 
 
 dotenv.config({ path: path.join(__dirname, '.env') });
@@ -32,21 +32,30 @@ app.get("/", async (_req, res) => {
     });
 });
 
-app.post("/connect", async (req, res) => {
+app.get("/qr", async (req, res) => {
+    let fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.write('<html><body>');
+    const b64img = await qrcode.toDataURL(fullUrl);
+    res.write('<img src="' + b64img + '" alt="QR" />');
+    res.end('</html></body>');
+})
 
-    checkConnectParams(req.body);
+app.get("/connect", async (req, res) => {
+
+    checkConnectParams(req.query);
 
     if(errors.length === 0){ 
         let connectConfig = {
-            amount: Number(req.body.amount),
-            currency: req.body.currency,
-            communication: req.body.communication,
-            customer_full_name: req.body.customer_full_name || 'Bob Smith',
-            customer_email: req.body.customer_email || 'bob.smith@gmail.com',
-            customer_ip: req.body.customer_ip || '127.0.0.1',
+            amount: Number(req.query.amount),
+            currency: req.query.currency,
+            communication: req.query.communication,
+            customer_full_name: req.query.customer_full_name || 'Bob Smith',
+            customer_email: req.query.customer_email || 'bob.smith@gmail.com',
+            customer_ip: req.query.customer_ip || '127.0.0.1',
             redirect_uri: process.env.APP_REDIRECT_URI,
             origin_uri: process.env.APP_REDIRECT_URI.replace('/callback',''),
-            psu_type: req.body.psu_type || 'retail',
+            psu_type: req.query.psu_type || 'retail',
             country: 'fr'
         };
     
@@ -92,4 +101,4 @@ function checkConnectParams(params) {
     if (Number(params.amount) <= 0) errors.push('Amount should be greater than 0')
 }
 
-app.listen(1237, () => console.log("Fintecture App listening on port 1237..."))
+app.listen(1238, () => console.log("Fintecture App listening on port 1238..."))
