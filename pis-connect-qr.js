@@ -33,7 +33,7 @@ app.get("/", async (_req, res) => {
 });
 
 app.get("/qr", async (req, res) => {
-    let fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+    let fullUrl = req.protocol + '://' + req.headers['x-forwarded-host'] + '/connect?' + req.url.split('?')[1];
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.write('<html><body>');
     const b64img = await qrcode.toDataURL(fullUrl);
@@ -50,9 +50,9 @@ app.get("/connect", async (req, res) => {
             amount: Number(req.query.amount),
             currency: req.query.currency,
             communication: req.query.communication,
-            customer_full_name: req.query.customer_full_name || 'Bob Smith',
-            customer_email: req.query.customer_email || 'bob.smith@gmail.com',
-            customer_ip: req.query.customer_ip || '127.0.0.1',
+            customer_full_name: 'QR CODE',
+            customer_email: 'noreply@fintecture.com',
+            customer_ip: req.headers['x-forwarded-ip'] || '127.0.0.1',
             redirect_uri: process.env.APP_REDIRECT_URI,
             origin_uri: process.env.APP_REDIRECT_URI.replace('/callback',''),
             psu_type: req.query.psu_type || 'retail',
