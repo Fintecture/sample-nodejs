@@ -52,7 +52,7 @@ app.get("/connect", async (req, res) => {
             communication: req.query.communication,
             customer_full_name: 'QR CODE',
             customer_email: 'noreply@fintecture.com',
-            customer_ip: req.headers['x-forwarded-ip'] || '127.0.0.1',
+            customer_ip: req.headers['x-forwarded-for'] || '127.0.0.1',
             redirect_uri: process.env.APP_REDIRECT_URI,
             origin_uri: process.env.APP_REDIRECT_URI.replace('/callback',''),
             psu_type: req.query.psu_type || 'retail',
