@@ -38,14 +38,15 @@ app.post("/connect", async (req, res) => {
 
     if(errors.length === 0){ 
         let connectConfig = {
-            amount: Number(req.body.amount),
+            amount: req.body.amount,
             currency: req.body.currency,
             communication: req.body.communication,
             customer_full_name: req.body.customer_full_name || 'Bob Smith',
             customer_email: req.body.customer_email || 'bob.smith@gmail.com',
             customer_ip: req.body.customer_ip || '127.0.0.1',
-            redirect_uri: process.env.APP_REDIRECT_URI,
-            origin_uri: process.env.APP_REDIRECT_URI.replace('/callback',''),
+            state: 'somestate',
+            //redirect_uri: process.env.APP_REDIRECT_URI ,
+            //origin_uri: process.env.APP_REDIRECT_URI.replace('/callback','?anjan=true'),
             psu_type: req.body.psu_type || 'retail',
             country: 'fr'
         };

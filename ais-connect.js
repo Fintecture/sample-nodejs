@@ -2,11 +2,11 @@ const { FintectureClient } = require('fintecture-client');
 const app = require("express")();
 const path = require('path');
 const dotenv = require('dotenv');
-var bodyParser = require("body-parser"); 
+var bodyParser = require("body-parser");
 
-app.set("view engine", "ejs"); 
+app.set("view engine", "ejs");
 app.set("views", __dirname + "/views/ais-connect");
-app.use(bodyParser.urlencoded({ extended: false })); 
+app.use(bodyParser.urlencoded({ extended: false }));
 
 dotenv.config({ path: path.join(__dirname, '.env') });
 
@@ -32,9 +32,8 @@ app.get("/connect", (req, res) => {
     const country = req.query.country || 'fr';
 
     let config = {
-        redirect_uri:process.env.APP_REDIRECT_URI,
-        origin_uri:process.env.APP_REDIRECT_URI + '?origin=hello',
-        state:"bob",
+        redirect_uri: process.env.APP_REDIRECT_URI,
+        state: "bob",
         psu_type: psuType,
         country: country
     }
@@ -43,34 +42,17 @@ app.get("/connect", (req, res) => {
 
     res.writeHead(
         301,
-        {Location: connect.url}
+        { Location: connect.url }
     );
     res.end();
 });
-
-app.get("/i_have_an_access_token", (req, res) => {
-    let config = {
-        access_token: req.query.access_token,
-        redirect_uri:process.env.APP_REDIRECT_URI,
-        error_redirect_uri:process.env.APP_REDIRECT_URI + '?error=error',
-        state:"bob",
-        psu_type: psuType,
-        country: country
-    }
-    const url = `http://localhost:4201/ais/retail/fr?state=${Buffer.from(JSON.stringify(state)).toString('base64')}`
-    res.writeHead(
-        301,
-        {Location: url}
-    );
-    res.end();
-})
 
 app.get("/error_page", async (req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.write('<html><body>');
     res.end('<h1>Error page</h1>');
     res.end('</html></body>');
-}); 
+});
 
 // Get 'code' querystring parameter and hit data api
 app.get("/callback", async (req, res) => {
@@ -78,27 +60,24 @@ app.get("/callback", async (req, res) => {
     customerId = req.query.customer_id;
 
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-    res.write('</html></body>');
+    res.write('<html><body>');
 
-    if(code){
+    if (code) {
         try {
             // get the Fintecture access token to request the AIS APIs
             const tokens = await client.getAccessToken(code);
             accessToken = tokens.access_token;
+            const accounts = await client.getAccounts(accessToken, customerId);
+            res.write(_prettyDisplayAccounts(accounts));
         }
         catch (err) {
             res.write(err.response ? JSON.stringify(err.response.data) : 'error')
-            res.write('</html></body>');
-            res.end();
         }
-    } 
-    
-    // get the Account details from the PSU
-    const accounts = await client.getAccounts(accessToken, customerId);
-    res.write(_prettyDisplayAccounts(accounts));
-    
+
+    }
     res.write('</html></body>');
     res.end();
+
 });
 
 app.get("/transactions/:account", async (req, res) => {
