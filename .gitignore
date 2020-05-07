@@ -1,2 +1,4 @@
 /node_modules
+pis-connect-openbanking.js
+pis-connect-qr.js
 .env

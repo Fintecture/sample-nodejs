@@ -25,9 +25,17 @@ app.get("/", async (_req, res) => {
         amount: 150,
         currency: "EUR",
         communication: "123",
+        execution_date: '',
         customer_ip: '',
         customer_full_name: '',
         customer_email: '',
+        customer_phone: '',
+        customer_address_street: '',
+        customer_address_number: '',
+        customer_address_complement: '',
+        customer_address_zip: '',
+        customer_address_city: '',
+        customer_address_country: '',
         production: process.env.FINTECTURE_ENV === "production"
     });
 });
@@ -41,16 +49,24 @@ app.post("/connect", async (req, res) => {
             amount: req.body.amount,
             currency: req.body.currency,
             communication: req.body.communication,
+            execution_date: req.body.execution_date || null,
             customer_full_name: req.body.customer_full_name || 'Bob Smith',
             customer_email: req.body.customer_email || 'bob.smith@gmail.com',
             customer_ip: req.body.customer_ip || '127.0.0.1',
+            customer_phone: req.body.customer_phone || '',
+            customer_address_street: req.body.customer_address_street || '',
+            customer_address_number: req.body.customer_address_number || '',
+            customer_address_complement: req.body.customer_address_complement || '',
+            customer_address_zip: req.body.customer_address_zip || '',
+            customer_address_city: req.body.customer_address_city || '',
+            customer_address_country: req.body.customer_address_country || '',
             state: 'somestate',
-            //redirect_uri: process.env.APP_REDIRECT_URI ,
-            //origin_uri: process.env.APP_REDIRECT_URI.replace('/callback','?anjan=true'),
+            //redirect_uri: you can specify your own redirect_uri as long as it's defined in the console ; default redirect_uri is the one defined in the console
+            //origin_uri: you can use any origin_uri (in case payeur abandons payment) ; default origin_uri is the last page he was on before redirecting to Connect
             psu_type: req.body.psu_type || 'retail',
             country: 'fr'
         };
-    
+
         try {
             let accessToken = await client.getAccessToken();
             let connect = await client.getPisConnect(accessToken["access_token"], connectConfig);
@@ -70,10 +86,11 @@ app.post("/connect", async (req, res) => {
 
 app.get("/callback", async (req, res) => {
     try {
+
         let accessToken = await client.getAccessToken();
         let payment = await client.getPayments(accessToken["access_token"], req.query.session_id);
         let verification = (payment.meta.status === req.query.status)
-
+        //let deleteData = await client.deleteCustomer(accessToken["access_token"], req.query.customer_id);
         res.render("callback", {
             status: req.query.status,
             verified: verification

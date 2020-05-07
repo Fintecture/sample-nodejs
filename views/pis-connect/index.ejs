@@ -1,50 +1,84 @@
 <html>
-    <body>
-        <% if (errors.length) { %>
-            <h2><%= errors.length === 1 ? 'Error' : 'Errors' %> prohibited this connect configuration</h2>
-            <ul>
-                <% for(var i=0; i<errors.length; i++) {%>
-                    <li><%= errors[i] %></li>
-                <% } %>
-            </ul>
+
+<body>
+    <% if (errors.length) { %>
+    <h2><%= errors.length === 1 ? 'Error' : 'Errors' %> prohibited this connect configuration</h2>
+    <ul>
+        <% for(var i=0; i<errors.length; i++) {%>
+        <li><%= errors[i] %></li>
         <% } %>
+    </ul>
+    <% } %>
 
-        <form name="form1" method="POST" action="/connect">
-            <div class="form-group">
-                <label for="amount">* Amount</label>
-                <input type="number" id="amount" name="amount" value="<%= amount %>">
-            </div>
-            <div class="form-group">
-                <label for="currency">* Currency</label>
-                <input type="text" id="currency" name="currency" value="<%= currency %>">
-            </div>
-            <div class="form-group">
-                <label for="communication">* Communication</label>
-                <input type="text" id="communication" name="communication" value="<%= communication %>">
-            </div>
-            <div class="form-group">
-                <label for="psu_type">* Type</label>
-                <select name="psu_type">
-                    <option value="retail">Retail</option>
-                    <option value="corporate">Corporate</option>
-                  </select>
-            </div>
+    <form name="form1" method="POST" action="/connect">
+        <div class="form-group">
+            <label for="amount">* Amount</label>
+            <input type="number" id="amount" name="amount" value="<%= amount %>">
+        </div>
+        <div class="form-group">
+            <label for="currency">* Currency</label>
+            <input type="text" id="currency" name="currency" value="<%= currency %>">
+        </div>
+        <div class="form-group">
+            <label for="communication">* Communication</label>
+            <input type="text" id="communication" name="communication" value="<%= communication %>">
+        </div>
+        <div class="form-group">
+            <label for="communication">Execution Date</label>
+            <input type="text" id="execution_date" name="execution_date" value="<%= execution_date %>">
+        </div>
+        <div class="form-group">
+            <label for="psu_type">* Type</label>
+            <select name="psu_type">
+                <option value="retail">Retail</option>
+                <option value="corporate">Corporate</option>
+                <option value="corporate">All</option>
+            </select>
+        </div>
 
-            <% if (production) { %>
-                <div class="form-group">
-                    <label for="customer_ip">* Customer IP</label>
-                    <input type="text" id="customer_ip" name="customer_ip" value="<%= customer_ip %>">
-                </div>
-                <div class="form-group">
-                    <label for="customer_full_name">* Customer Full Name</label>
-                    <input type="text" id="customer_full_name" name="customer_full_name" value="<%= customer_full_name %>">
-                </div>
-                <div class="form-group">
-                    <label for="customer_email">* Customer Email</label>
-                    <input type="email" id="customer_email" name="customer_email" value="<%= customer_email %>">
-                </div>
-            <% } %>
-            <button type="submit">Pay by bank</button>
-        </form>
-    </body>
+        <div class="form-group">
+            <label for="customer_ip">*Customer IP</label>
+            <input type="text" id="customer_ip" name="customer_ip" value="<%= customer_ip %>">
+        </div>
+        <div class="form-group">
+            <label for="customer_full_name">* Customer Full Name</label>
+            <input type="text" id="customer_full_name" name="customer_full_name" value="<%= customer_full_name %>">
+        </div>
+        <div class="form-group">
+            <label for="customer_email">* Customer Email</label>
+            <input type="email" id="customer_email" name="customer_email" value="<%= customer_email %>">
+        </div>
+        <div class="form-group">
+            <label for="customer_phone">Customer Phone</label>
+            <input type="email" id="customer_phone" name="customer_phone" value="<%= customer_phone %>">
+        </div>
+        <div class="form-group">
+            <label for="customer_address_street">Customer Address Street</label>
+            <input type="email" id="customer_address_street" name="customer_address_street" value="<%= customer_address_street %>">
+        </div>
+        <div class="form-group">
+            <label for="customer_address_number">Customer Address Number</label>
+            <input type="email" id="customer_address_number" name="customer_address_number" value="<%= customer_address_number %>">
+        </div>
+        <div class="form-group">
+            <label for="customer_address_complement">Customer Address Complement</label>
+            <input type="email" id="customer_address_complement" name="customer_address_complement" value="<%= customer_address_complement %>">
+        </div>
+        <div class="form-group">
+            <label for="customer_address_zip">Customer Address Zip</label>
+            <input type="email" id="customer_address_zip" name="customer_address_zip" value="<%= customer_address_zip %>">
+        </div>
+        <div class="form-group">
+            <label for="customer_address_city">Customer Address City</label>
+            <input type="email" id="customer_address_city" name="customer_address_city" value="<%= customer_address_city %>">
+        </div>
+        <div class="form-group">
+            <label for="customer_address_country">Customer Address Country</label>
+            <input type="email" id="customer_address_country" name="customer_address_country" value="<%= customer_address_country %>">
+        </div>
+
+        <button type="submit">Pay by bank</button>
+    </form>
+</body>
+
 </html>
