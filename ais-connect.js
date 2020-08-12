@@ -91,7 +91,7 @@ app.get("/transactions/:account", async (req, res) => {
         const transactions = await client.getTransactions(accessToken, customerId, account);
         res.write(_prettyDisplayTransactions(transactions));
         while (transactions.links.next) {
-            transactions = await client.getTransactions(accessToken, customerId, account, null, transactions.links.next) ;
+            transactions = await client.getTransactions(accessToken, customerId, account, '{ "filter[date_from]": "max"}', transactions.links.next) ;
             res.write(_prettyDisplayTransactions(transactions));
           }
         
