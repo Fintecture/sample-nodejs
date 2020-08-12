@@ -28,7 +28,7 @@ app.get("/", async (_req, res) => {
 
 // Redirect to connect
 app.get("/connect", (req, res) => {
-    const psuType = req.query.psu_type || 'retail';
+    const psuType = req.query.psu_type || 'all';
     const country = req.query.country || 'fr';
 
     let config = {
@@ -90,6 +90,11 @@ app.get("/transactions/:account", async (req, res) => {
         // get the Transaction details from the PSU
         const transactions = await client.getTransactions(accessToken, customerId, account);
         res.write(_prettyDisplayTransactions(transactions));
+        while (transactions.links.next) {
+            transactions = await client.getTransactions(accessToken, customerId, account, null, transactions.links.next) ;
+            res.write(_prettyDisplayTransactions(transactions));
+          }
+        
     }
     catch (err) {
         res.write(err.response ? JSON.stringify(err.response.data) : 'error')
@@ -127,7 +132,7 @@ var _prettyDisplayTransactions = function (transactions) {
     transactions.data.forEach(txn => {
         rows = rows + '<tr><td>' + txn.attributes.booking_date + '</td><td>' + txn.attributes.communication + '</td><td>' + txn.attributes.amount + '</td><td>' + txn.attributes.currency + '</td><tr>';
     });
-    return '<table style="border:1px black;padding: 10px;">' + headers + rows + '</table>';
+    return '<table style="border:1px black;padding: 10px;">' + headers + rows + '</table><br>';
 }
 
 app.listen(1236, () => console.log("Fintecture App listening on port 1236..."))

@@ -2,6 +2,7 @@ const { FintectureClient } = require('fintecture-client');
 const app = require("express")();
 const path = require('path');
 const dotenv = require('dotenv');
+const qrcode = require('qrcode');
 
 dotenv.config({ path: path.join(__dirname, '.env') });
 
@@ -43,13 +44,23 @@ app.get("/provider/:provider/auth", async (req, res) => {
     res.write('<html><body>');
 
     let psuId = req.query.psu_id;
-    let psuIpAddress = req.headers['x-forwarded-for'];
+    let psuIpAddress = req.headers['x-forwarded-for'] || '127.0.0.1';
 
     try {
+        console.log("==> test", null, req.params.provider, psuId, psuIpAddress)
+        let providerAuth = await client.getDecoupledAuthUrl(null, req.params.provider, psuId, psuIpAddress, process.env.APP_REDIRECT_URI);
+        console.log("==> test2")
         res.write('Mobile authentication started, please open your bank app to authenticate. <br><br>');
+
+        if (!!providerAuth.triggers) {
+            const b64img = await qrcode.toDataURL(providerAuth.triggers.qr);
+            res.write('<img src="' + b64img + '" alt="QR" /><br><br>');
+            res.write('A2A <a href="' + providerAuth.triggers.a2a +'">App2App</a> <br><br>');
+        }
+
+
         res.write('loading . .')
         // Initiate a decopled authentication and get the polling URL
-        let providerAuth = await client.getDecoupledAuthUrl(null, req.params.provider, psuId, psuIpAddress);
         while (true) {
             try {
                 // poll the decoupled authentication status
