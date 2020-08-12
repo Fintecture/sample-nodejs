@@ -84,6 +84,11 @@ app.get("/transactions/:account", async (req, res) => {
         // get the Transaction details from the PSU
         const transactions = await client.getTransactions(accessToken, customerId, account);
         res.write(_prettyDisplayTransactions(transactions));
+        while (transactions.links.next) {
+            transactions = await client.getTransactions(accessToken, customerId, account, '{ "filter[date_from]": "max"}', transactions.links.next) ;
+            res.write(_prettyDisplayTransactions(transactions));
+          }
+        
     }
     catch (err) {
         res.write(err.response ? JSON.stringify(err.response.data) : 'error')
