@@ -1,6 +1,10 @@
 <html>
     <body>
         <form name="form1" method="GET" action="/connect">
+            <input type="hidden" name="psu_type" value="all" /> 
+            <button type="submit">Connect ALL</button>
+        </form>
+        <form name="form1" method="GET" action="/connect">
             <input type="hidden" name="psu_type" value="retail" /> 
             <button type="submit">Connect RETAIL</button>
         </form>
