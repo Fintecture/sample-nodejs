@@ -27,7 +27,7 @@ app.get("/", async (_req, res) => {
 
 
 // Redirect to connect
-app.get("/connect", (req, res) => {
+app.get("/connect", async (req, res) => {
     const psuType = req.query.psu_type || 'all';
     const country = req.query.country || 'fr';
 
@@ -38,7 +38,7 @@ app.get("/connect", (req, res) => {
         country: country
     }
 
-    const connect = client.getAisConnect(null, config)
+    const connect = await client.getAisConnect(null, config)
 
     res.writeHead(
         301,
@@ -67,10 +67,15 @@ app.get("/callback", async (req, res) => {
             // get the Fintecture access token to request the AIS APIs
             const tokens = await client.getAccessToken(code);
             accessToken = tokens.access_token;
+            const accountholders = await client.getAccountHolders(accessToken, customerId);
             const accounts = await client.getAccounts(accessToken, customerId);
-            res.write(_prettyDisplayAccounts(accounts));
+            let page = _prettyDisplayAccountHolders(accountholders);
+            page = page + '<br><br>' + _prettyDisplayAccounts(accounts);
+
+            res.write(page);
         }
         catch (err) {
+            console.log("error:", err)
             res.write(err.response ? JSON.stringify(err.response.data) : 'error')
         }
 
@@ -117,6 +122,15 @@ app.get("/provider/:provider", async (req, res) => {
     }
 });
 
+var _prettyDisplayAccountHolders = function (ahs) {
+    let headers = '<tr><th>Account Holders</th></tr>'
+    let rows = '';
+    ahs.data.forEach(ah => {
+        rows = rows + '<tr><td>' + ah.attributes.full_name + '</td><tr>';
+    });
+    return '<table style="border:1px black;padding: 10px;">' + headers + rows + '</table>';
+};
+
 var _prettyDisplayAccounts = function (accounts) {
     let headers = '<tr><th>account_id</th><th>IBAN</th><th>Name</th><th>balance</th><th>currency</th></tr>'
     let rows = '';
@@ -135,4 +149,4 @@ var _prettyDisplayTransactions = function (transactions) {
     return '<table style="border:1px black;padding: 10px;">' + headers + rows + '</table><br>';
 }
 
-app.listen(1236, () => console.log("Fintecture App listening on port 1236..."))
+app.listen(process.env.PORT || 1236, () => console.log("Fintecture App listening on port 1236..."))
