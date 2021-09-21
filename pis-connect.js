@@ -22,7 +22,7 @@ let errors = [];
 app.get("/", async (_req, res) => {
     res.render("index", {
         errors: errors,
-        amount: 150,
+        amount: 1,
         currency: "EUR",
         communication: "123",
         execution_date: '',
@@ -49,7 +49,7 @@ app.post("/connect", async (req, res) => {
             amount: req.body.amount,
             currency: req.body.currency,
             communication: req.body.communication,
-            execution_date: req.body.execution_date || null,
+            execution_date: req.body.execution_date || undefined,
             customer_full_name: req.body.customer_full_name || 'Bob Smith',
             customer_email: req.body.customer_email || 'bob.smith@gmail.com',
             customer_ip: req.body.customer_ip || '127.0.0.1',
