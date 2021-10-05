@@ -110,4 +110,6 @@ function checkConnectParams(params) {
     if (Number(params.amount) <= 0) errors.push('Amount should be greater than 0')
 }
 
-app.listen(1237, () => console.log("Fintecture App listening on port 1237..."))
+const port = process.env.PIS_CONNECT_PORT || 1237;
+
+app.listen(port, () => console.log("Fintecture App listening on port " + port + "..."))
