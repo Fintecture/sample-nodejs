@@ -30,12 +30,23 @@
         <div class="form-group">
             <label for="psu_type">* Type</label>
             <select name="psu_type">
+                <option value="all">All</option>
                 <option value="retail">Retail</option>
                 <option value="corporate">Corporate</option>
-                <option value="all">All</option>
             </select>
         </div>
-
+        <div class="form-group">
+            <label for="Scheme">* Type</label>
+            <select name="scheme">
+                <option value="auto">Auto</option>
+                <option value="SEPA">SEPA</option>
+                <option value="INSTANT_SEPA">INST</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="country">Country</label>
+            <input type="text" id="country" name="country" value="<%= country %>">
+        </div>
         <div class="form-group">
             <label for="customer_ip">*Customer IP</label>
             <input type="text" id="customer_ip" name="customer_ip" value="<%= customer_ip %>">

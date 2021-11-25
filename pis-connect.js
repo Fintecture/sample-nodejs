@@ -36,7 +36,9 @@ app.get("/", async (_req, res) => {
         customer_address_zip: '',
         customer_address_city: '',
         customer_address_country: '',
-        production: process.env.FINTECTURE_ENV === "production"
+        production: process.env.FINTECTURE_ENV === "production",
+        scheme: 'auto',
+        country: 'fr'
     });
 });
 
@@ -64,7 +66,8 @@ app.post("/connect", async (req, res) => {
             //redirect_uri: you can specify your own redirect_uri as long as it's defined in the console ; default redirect_uri is the one defined in the console
             //origin_uri: you can use any origin_uri (in case payeur abandons payment) ; default origin_uri is the last page he was on before redirecting to Connect
             psu_type: req.body.psu_type || 'retail',
-            country: 'fr'
+            country: req.body.country || 'fr',
+            scheme: (req.body.scheme == "auto")?'':req.body.scheme,
         };
 
         try {
