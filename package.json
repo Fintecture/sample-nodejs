@@ -4,7 +4,10 @@
   "description": "",
   "main": "sample.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:ais-connect": "node ais-connect",
+    "start:ais-decoupled": "node ais-decoupled",
+    "start:ais-redirect": "node ais-redirect",
+    "start:pis-connect": "node pis-connect"
   },
   "author": "",
   "license": "ISC",
