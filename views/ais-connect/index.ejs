@@ -1,14 +1,26 @@
 <html>
     <body>
         <form name="form1" method="GET" action="/connect">
+            <div class="form-group">
+                <label for="country">Country</label>
+                <input type="text" name="country" value="<%= country %>">
+            </div>
             <input type="hidden" name="psu_type" value="all" /> 
             <button type="submit">Connect ALL</button>
         </form>
         <form name="form1" method="GET" action="/connect">
+            <div class="form-group">
+                <label for="country">Country</label>
+                <input type="text" name="country" value="<%= country %>">
+            </div>
             <input type="hidden" name="psu_type" value="retail" /> 
             <button type="submit">Connect RETAIL</button>
         </form>
         <form name="form1" method="GET" action="/connect">
+            <div class="form-group">
+                <label for="country">Country</label>
+                <input type="text" name="country" value="<%= country %>">
+            </div>
             <input type="hidden" name="psu_type" value="corporate" /> 
             <button type="submit">Connect CORPO</button>
         </form>
