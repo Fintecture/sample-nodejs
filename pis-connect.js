@@ -38,7 +38,8 @@ app.get("/", async (_req, res) => {
         customer_address_country: '',
         production: process.env.FINTECTURE_ENV === "production",
         scheme: 'auto',
-        country: 'fr'
+        country: 'fr',
+        expiry: undefined
     });
 });
 
@@ -68,6 +69,8 @@ app.post("/connect", async (req, res) => {
             psu_type: req.body.psu_type || 'retail',
             country: req.body.country || 'fr',
             scheme: (req.body.scheme == "auto")?'':req.body.scheme,
+            expiry: req.body.expiry,
+            scheduled_expiration_policy: req.body.scheduled_expiration_policy
         };
 
         try {

@@ -87,6 +87,18 @@
             <label for="customer_address_country">Customer Address Country</label>
             <input type="email" id="customer_address_country" name="customer_address_country" value="<%= customer_address_country %>">
         </div>
+        <div class="form-group">
+            <label for="expiry">Expiry</label>
+            <input type="number" id="expiry" name="expiry" value="<%= expiry %>" min="0" step="1000">
+        </div>
+        <div class="form-group">
+            <label for="scheduled_expiration_policy">Scheduled Expiration Policy</label>
+            <select id="scheduled_expiration_policy" name="scheduled_expiration_policy">
+                <option  disabled selected value>No value</option>
+                <option value="immediate">immediate</option>
+                <option value="expire">expire</option>
+            </select>
+        </div>
 
         <button type="submit">Pay by bank</button>
     </form>
