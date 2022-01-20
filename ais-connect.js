@@ -12,6 +12,7 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 
 require('dotenv').config();
 
+
 // Create the fintecture client instance
 let client = new FintectureClient({ app_id: process.env.APP_ID, app_secret: process.env.APP_SECRET, private_key: process.env.APP_PRIV_KEY, env: process.env.FINTECTURE_ENV });
 
@@ -22,29 +23,35 @@ let customerId;
 
 // initial screen
 app.get("/", async (_req, res) => {
-    res.render("index", {});
+    res.render('index', {
+        country: 'fr'
+    });
 });
 
 
 // Redirect to connect
-app.get("/connect", async (req, res) => {
+app.get("/connect", async (req, res, next) => {
     const psuType = req.query.psu_type || 'all';
     const country = req.query.country || 'fr';
 
-    let config = {
+    const config = {
         redirect_uri: process.env.APP_REDIRECT_URI,
         state: "bob",
         psu_type: psuType,
         country: country
+    };
+
+    try {
+        const connect = await client.getAisConnect(null, config);
+
+        res.writeHead(
+            301,
+            { Location: connect.url }
+        );
+        res.end();
+    } catch(err) {
+        next(err);
     }
-
-    const connect = await client.getAisConnect(null, config)
-
-    res.writeHead(
-        301,
-        { Location: connect.url }
-    );
-    res.end();
 });
 
 app.get("/error_page", async (req, res) => {
