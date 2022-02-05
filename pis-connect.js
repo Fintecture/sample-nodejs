@@ -68,7 +68,7 @@ app.post("/connect", async (req, res) => {
             //origin_uri: you can use any origin_uri (in case payeur abandons payment) ; default origin_uri is the last page he was on before redirecting to Connect
             psu_type: req.body.psu_type || 'retail',
             country: req.body.country || 'fr',
-            scheme: (req.body.scheme == "auto")?'':req.body.scheme,
+            scheme: req.body.scheme,
             expiry: req.body.expiry,
             scheduled_expiration_policy: req.body.scheduled_expiration_policy
         };
