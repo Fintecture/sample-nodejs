@@ -16,7 +16,7 @@
     "dotenv": "^8.2.0",
     "ejs": "^3.0.1",
     "express": "^4.17.1",
-    "fintecture-client": "^2.0.1",
+    "fintecture-client": "^2.0.2",
     "path": "^0.12.7",
     "qrcode": "^1.4.4"
   }
