@@ -64,15 +64,18 @@ app.get("/error_page", async (req, res) => {
 app.get("/callback", async (req, res) => {
   const code = req.query.code;
   customerId = req.query.customer_id;
+  accessToken = req.query.access_token;
 
   res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
   res.write("<html><body>");
 
-  if (code) {
+  if (code || accessToken) {
     try {
       // get the Fintecture access token to request the AIS APIs
-      const tokens = await client.getAccessToken(code);
-      accessToken = tokens.access_token;
+      if (code) {
+        const tokens = await client.getAccessToken(code);
+        accessToken = tokens.access_token;
+      }
       let accountholders = null;
       try {
         accountholders = await client.getAccountHolders(
