@@ -39,7 +39,8 @@ app.get("/", async (_req, res) => {
         production: process.env.FINTECTURE_ENV === "production",
         scheme: 'auto',
         country: 'fr',
-        expiry: undefined
+        expiry: undefined,
+        debited_account_id: ''
     });
 });
 
@@ -72,6 +73,12 @@ app.post("/connect", async (req, res) => {
             expiry: req.body.expiry,
             scheduled_expiration_policy: req.body.scheduled_expiration_policy
         };
+
+        // Add debtor account Id to config along side its type only when present
+        if (req.body.debited_account_id) {
+            connectConfig.debited_account_id = req.body.debited_account_id;
+            connectConfig.debited_account_type = 'IBAN';
+        }
 
         try {
             let accessToken = await client.getAccessToken();
